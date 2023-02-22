@@ -1,0 +1,181 @@
+<div class="data-card">
+  <mat-card class="p-5">
+
+      <form action="" [formGroup]="dataForm" class="flex flex-column justify-content-center gap-3 sm:gap-8 sm:flex sm:flex-row sm:flex-wrap"  >
+
+          <mat-form-field appearance="outline" class=" sm:w-3" >
+              <mat-label>District</mat-label>
+              <mat-select formControlName="disData" (selectionChange)="onChangeDistrict()"  >
+             <mat-option *ngFor="let district of getDistrict" [value]="district.disId">
+                  {{district.disName}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline"  class=" sm:w-3  ">
+              <mat-label>Division</mat-label>
+              <mat-select formControlName="divisionData"  (selectionChange)="onChangeDivision()" >
+                <mat-option>Select</mat-option>
+                <mat-option *ngFor="let division of getDivision" [value]="division.divId">
+                 {{division.divName}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class=" sm:w-3">
+              <mat-label>Subdivision</mat-label>
+              <mat-select formControlName="subDivisionData">
+                <mat-option>Select</mat-option>
+                <mat-option *ngFor="let subdivision of getSubDivision" [value]="subdivision.sudId" >
+                 {{subdivision.sudName}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+
+            <mat-form-field appearance="outline"  class="sm:w-3">
+              <mat-label>From</mat-label>
+              <input matInput [matDatepicker]="picker"  [max]="maxDate" class="border-2  rounded-lg w-1/2"  formControlName="fromDateData" readonly >
+              <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+
+
+            <mat-form-field appearance="outline" class="sm:w-3">
+              <mat-label>To</mat-label>
+              <input matInput [matDatepicker]="picker1"  [max]="maxDate" class="border-2  rounded-lg w-1/2" formControlName="toDateData" readonly >
+              <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
+              <mat-datepicker #picker1></mat-datepicker>
+            </mat-form-field>
+
+
+
+            </form>
+
+        <div class="flex justify-content-center mt-5 " >
+          <button mat-raised-button class="searchBtn"
+               style="background: #ee7f00; border-radius: 5px;
+               color:white; font-size: 20px; padding: 10px 25px;"
+               (click)="view()">Search
+          </button>
+        </div>
+
+        <div class="icons-cont flex gap-3 pt-6">
+          <div class="excel-img" style="cursor: pointer;">
+             <button mat-icon-button (click)="showInExcel()" *ngIf="showExcel">
+              <img src="../assets/excel.png">
+            </button>
+          </div>
+        </div>
+
+         <div class="filter-cont pt-5" *ngIf="showFilter">
+            <mat-form-field class="example-full-width">
+                <mat-label>Filter</mat-label>
+                   <input type="text" matInput placeholder="Search" (keyup)="applyFilter($event)" >
+            </mat-form-field>
+          </div>
+
+        <div class="mat-elevation-z8 w-full">
+               <table mat-table [dataSource]="dataSource"  *ngIf="showTable">
+
+                      <!-- ID Column -->
+                      <ng-container matColumnDef="srNo">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Sr No. </th>
+                        <td mat-cell *matCellDef="let element ; let i=index;"> {{i+ 1}} </td>
+                      </ng-container>
+
+                      <!-- Progress Column -->
+                      <ng-container matColumnDef="complaintNo">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Complaint No </th>
+                        <td mat-cell *matCellDef="let element"> {{element.complaintId}} </td>
+                      </ng-container>
+
+                      <!-- Name Column -->
+                      <ng-container matColumnDef="location">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Location </th>
+                        <td mat-cell *matCellDef="let element"> {{element.potAddress}} </td>
+                      </ng-container>
+
+                      <ng-container matColumnDef="landmark">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Landmark </th>
+                        <td mat-cell *matCellDef="let element" > {{element.potLandmark}} </td>
+                      </ng-container>
+
+                      <ng-container matColumnDef="stage">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Stage </th>
+                        <td mat-cell *matCellDef="let element"> <div [ngClass]="{ 'assigned':box1 ,'closed': box2}">{{element.status}} </div></td>
+                      </ng-container>
+
+                     <ng-container matColumnDef="reason">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Reported reason </th>
+                        <td mat-cell *matCellDef="let element"> {{element.potReportComment}} </td>
+                      </ng-container>
+                      <!-- Fruit Column -->
+
+
+                      <ng-container matColumnDef="reportDate">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Reported Date </th>
+                        <td mat-cell *matCellDef="let element"> {{element.potAssignedAt}} </td>
+                      </ng-container>
+
+                      <ng-container matColumnDef="fromDeputyName">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>From Deputy Engineer Name </th>
+                        <td mat-cell *matCellDef="let element"> {{element.AssignededDeputyEngineer}} </td>
+                      </ng-container>
+
+                      <ng-container matColumnDef="disName">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>District Name </th>
+                        <td mat-cell *matCellDef="let element"> {{element.potDistrict}} </td>
+                      </ng-container>
+
+                      <ng-container matColumnDef="potDivision">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Division</th>
+                        <td mat-cell *matCellDef="let element"> {{element.potDivision}} </td>
+                      </ng-container>
+
+                      <ng-container matColumnDef="sudName">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header> SubDivision </th>
+                        <td mat-cell *matCellDef="let element"> {{element.potSubDivision}} </td>
+                      </ng-container>
+
+                      <ng-container matColumnDef="toDeputyName">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header> To Deputy Engineer Name</th>
+                        <td mat-cell *matCellDef="let element"> {{element.TransferDeputyEngineer}} </td>
+                      </ng-container>
+
+                      <ng-container matColumnDef="transferDist">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Transfer District</th>
+                        <td mat-cell *matCellDef="let element"> {{element.transferredDisName}} </td>
+                      </ng-container>
+
+                      <ng-container matColumnDef="transferDiv">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Transfer Division </th>
+                        <td mat-cell *matCellDef="let element"> {{element.transferredDivName}} </td>
+                      </ng-container>
+
+                      <ng-container matColumnDef="transferSubdiv">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Transfer Subdivision </th>
+                        <td mat-cell *matCellDef="let element"> {{element.transferredSudName}} </td>
+                      </ng-container>
+
+                      <ng-container matColumnDef="transferDate">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Transfer Date</th>
+                        <td mat-cell *matCellDef="let element"> {{element.potTransferAt}} </td>
+                      </ng-container>
+
+                      <ng-container matColumnDef="transferRemark">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Transfer Remark </th>
+                        <td mat-cell *matCellDef="let element"> {{element.potTransferComment}} </td>
+                      </ng-container>
+
+                      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+            <mat-paginator [pageSizeOptions]="[10,20,50]" aria-label="Select page of users"></mat-paginator>
+          </div>
+      </mat-card>
+  </div>
+
+
+
+
